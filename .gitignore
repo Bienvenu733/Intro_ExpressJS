@@ -1,0 +1,9 @@
+#Fichiers et dossiers à ignorer pour Git
+# Node.js modules
+node_modules/
+
+# Logs
+logs/
+*.log
+# Fichier de verrouillage des dépendances
+package-lock.json
