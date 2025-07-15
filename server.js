@@ -16,10 +16,7 @@ server.use(express.json());
 const PORT = 3000;
 
 //7- In-memory data store
-let tasks = [
-  { id: 1, title: "Apprendre Express", completed: false },
-  { id: 2, title: "Faire une API", completed: true },
-];
+let tasks = [];
 let nextId = 1;
 
 /*8- Routes implementation*/
@@ -67,16 +64,24 @@ server.put("/api/tasks/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const { title, completed } = req.body;
 
-  // Reaserch the ID in the request in the tasks array
   const task = tasks.find((t) => t.id === id);
 
   if (!task) {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // Update the task properties if provided
-  if (title !== undefined) task.title = title;
-  if (completed !== undefined) task.completed = completed;
+  // completed validation
+  if (completed !== undefined) {
+    if (typeof completed !== 'boolean') {
+      return res.status(400).json({ message: "The 'completed' field must be a boolean (true or false)" });
+    }
+    task.completed = completed;
+  }
+
+  // title update
+  if (title !== undefined) {
+    task.title = title;
+  }
 
   res.json(task);
 });
@@ -96,4 +101,4 @@ server.delete("/api/tasks/:id", (req, res) => {
 });
 
 //6-Server Start
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}... http://localhost:${PORT}`));
