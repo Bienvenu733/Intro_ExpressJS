@@ -28,12 +28,12 @@ server.get("/api/tasks", (req, res) => {
 });
 
 // GET /api/tasks/:id to get a task by ID
-server.get("/api/tasks/:id", (req, res) => {
+server.get("/api/tasks/:id", (req, res, next) => {
   const id = parseInt(req.params.id);
   const task = tasks.find((t) => t.id === id);
 
   if (!task) {
-    return res.status(404).json({ message: "Task not found" });
+    return next({ status: 404, message: "Task not found" });
   }
 
   res.json(task);
@@ -41,11 +41,11 @@ server.get("/api/tasks/:id", (req, res) => {
 
 // server.post
 // POST /api/tasks to create a new task
-server.post("/api/tasks", (req, res) => {
+server.post("/api/tasks", (req, res, next) => {
   const { title } = req.body;
 
   if (!title) {
-    return res.status(400).json({ message: "Title is required" });
+    return next({ status: 400, message: "Title is required" });
   }
 
   const newTask = {
@@ -60,44 +60,50 @@ server.post("/api/tasks", (req, res) => {
 
 // server.put
 // PUT /api/tasks/:id to update a task by ID
-server.put("/api/tasks/:id", (req, res) => {
+server.put("/api/tasks/:id", (req, res, next) => {
   const id = parseInt(req.params.id);
   const { title, completed } = req.body;
 
   const task = tasks.find((t) => t.id === id);
-
   if (!task) {
-    return res.status(404).json({ message: "Task not found" });
+    return next({ status: 404, message: "Task not found" });
   }
 
-  // completed validation
-  if (completed !== undefined) {
-    if (typeof completed !== 'boolean') {
-      return res.status(400).json({ message: "The 'completed' field must be a boolean (true or false)" });
-    }
-    task.completed = completed;
+  if (completed !== undefined && typeof completed !== "boolean") {
+    return next({
+      status: 400,
+      message: "The 'completed' field must be a boolean (true or false)",
+    });
   }
 
-  // title update
-  if (title !== undefined) {
-    task.title = title;
-  }
+  if (title !== undefined) task.title = title;
+  if (completed !== undefined) task.completed = completed;
 
   res.json(task);
 });
 
 // server.delete
 // DELETE /api/tasks/:id to delete a task by ID
-server.delete("/api/tasks/:id", (req, res) => {
+server.delete("/api/tasks/:id", (req, res, next) => {
   const id = parseInt(req.params.id);
   const index = tasks.findIndex((t) => t.id === id);
 
   if (index === -1) {
-    return res.status(404).json({ message: "Task not found" });
+    return next({ status: 404, message: "Task not found" });
   }
 
   tasks.splice(index, 1);
   res.sendStatus(204);
+});
+
+//Middleware de gestion globale des erreurs
+server.use((err, req, res, next) => {
+  console.error(err.stack); // pour debug
+
+  const statusCode = err.status || 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({ message });
 });
 
 //6-Server Start
