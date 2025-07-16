@@ -1,7 +1,8 @@
 #Fichiers et dossiers à ignorer pour Git
 # Node.js modules
 node_modules/
-
+# Environnement
+.env
 # Logs
 logs/
 *.log
