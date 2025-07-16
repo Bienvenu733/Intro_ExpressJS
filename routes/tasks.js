@@ -37,8 +37,12 @@ router.get("/:id", (req, res, next) => {
 router.post("/", (req, res, next) => {
   const { title } = req.body;
 
-  if (!title) {
-    return next({ status: 400, message: "Title is required" });
+  // Vérifie que title existe ET qu'il reste du texte après trim()
+  if (!title || typeof title !== "string" || title.trim().length === 0) {
+    return next({
+      status: 400,
+      message: "The 'title' field is required and must be a non-empty string.",
+    });
   }
 
   const newTask = {
@@ -77,6 +81,40 @@ router.patch("/:id", (req, res, next) => {
 
   res.json(task);
 });
+
+// PUT --> Mise à jour complète d'une tâche par ID
+router.put("/:id", (req, res, next) => {
+  const id = req.params.id;
+  const { title, completed } = req.body;
+
+  const task = tasks.find((t) => t.id === id);
+  if (!task) {
+    return next({ status: 404, message: "Task not found" });
+  }
+
+  if (completed !== undefined && typeof completed !== "boolean") {
+    return next({
+      status: 400,
+      message: "The 'completed' field must be a boolean (true or false)",
+    });
+  }
+
+  // Si title est fourni, on le valide aussi
+  if (title !== undefined) {
+    if (typeof title !== "string" || title.trim().length === 0) {
+      return next({
+        status: 400,
+        message: "The 'title' must be a non-empty string.",
+      });
+    }
+    task.title = title.trim();
+  }
+
+  if (completed !== undefined) task.completed = completed;
+
+  res.json(task);
+});
+
 
 // DELETE --> Supprimer une tâche par ID
 router.delete("/:id", (req, res, next) => {
