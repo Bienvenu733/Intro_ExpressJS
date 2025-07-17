@@ -1,12 +1,12 @@
 /****************
  * tasks.js
-  ****************/ 
- 
+ ****************/
+
 //Importation d'Express
 const express = require("express");
 //Importation d'uuid pour générer des IDs uniques
 /* Pour installer --> npm install uuid */
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 //Création du routeur
 const router = express.Router();
@@ -35,8 +35,12 @@ router.get("/:id", (req, res, next) => {
 router.post("/", (req, res, next) => {
   const { title } = req.body;
 
-  if (!title) {
-    return next({ status: 400, message: "Title is required" });
+  // Vérifie que title existe ET qu'il reste du texte après trim()
+  if (!title || typeof title !== "string" || title.trim().length === 0) {
+    return next({
+      status: 400,
+      message: "The 'title' field is required and must be a non-empty string.",
+    });
   }
 
   const newTask = {
@@ -64,14 +68,16 @@ router.patch("/:id", (req, res, next) => {
   }
 
   if (typeof completed !== "boolean") {
-    return next({ status: 400, message: "The 'completed' field must be a boolean (true or false)" });
+    return next({
+      status: 400,
+      message: "The 'completed' field must be a boolean (true or false)",
+    });
   }
 
   task.completed = completed;
 
   res.json(task);
 });
-
 
 // PUT --> Mise à jour complète d'une tâche
 router.put("/:id", (req, res, next) => {
@@ -82,14 +88,23 @@ router.put("/:id", (req, res, next) => {
   if (!task) return next({ status: 404, message: "Task not found" });
 
   if (completed !== undefined && typeof completed !== "boolean") {
-    return next({ status: 400, message: "The 'completed' field must be a boolean (true or false)" });
+    return next({
+      status: 400,
+      message: "The 'completed' field must be a boolean (true or false)",
+    });
   }
 
-  if (title !== undefined && (typeof title !== "string" || title.trim().length < 3)) {
-    return next({ status: 400, message: "The 'title' must be a non-empty string with at least 3 characters." });
+    // Si title est fourni, on le valide aussi
+  if (title !== undefined) {
+    if (typeof title !== "string" || title.trim().length === 0) {
+      return next({
+        status: 400,
+        message: "The 'title' must be a non-empty string.",
+      });
+    }
+    task.title = title.trim();
   }
 
-  if (title !== undefined) task.title = title.trim();
   if (completed !== undefined) task.completed = completed;
 
   res.json(task);
