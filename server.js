@@ -5,6 +5,10 @@
 //Importation of necessary modules
 //2-Importation of the Express framework
 const express = require("express");
+//Importation de dotenv pour la gestion des variables d'environnement
+/* Pour installer --> npm install dotenv */
+require("dotenv").config();
+
 
 //Importation du routeur
 const tasksRouter = require("./routes/tasks");
@@ -16,7 +20,7 @@ const server = express();
 server.use(express.json());
 
 //5-Port Definition
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Montre toutes les routes sous /api/tasks
 server.use("/api/tasks", tasksRouter);
