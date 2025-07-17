@@ -6,6 +6,9 @@
 //2-Importation of the Express framework
 const express = require("express");
 
+//Importation du routeur
+const tasksRouter = require("./routes/tasks");
+
 //3-Creation of the Express server instance
 const server = express();
 
@@ -14,6 +17,9 @@ server.use(express.json());
 
 //5-Port Definition
 const PORT = 3000;
+
+// Montre toutes les routes sous /api/tasks
+server.use("/api/tasks", tasksRouter);
 
 //7- In-memory data store
 let tasks = [];
@@ -27,6 +33,7 @@ server.get("/api/tasks", (req, res) => {
   res.json(tasks);
 });
 
+/*
 // GET /api/tasks/:id to get a task by ID
 server.get("/api/tasks/:id", (req, res, next) => {
   const id = parseInt(req.params.id);
@@ -95,6 +102,7 @@ server.delete("/api/tasks/:id", (req, res, next) => {
   tasks.splice(index, 1);
   res.sendStatus(204);
 });
+*/
 
 //Middleware de gestion globale des erreurs
 server.use((err, req, res, next) => {
