@@ -3,7 +3,7 @@
  *****************************/
 
 //express framework import
-const express = require("express");
+const express = require('express');
 
 // création du mini routeur pour organiser les routes de façon modulaire
 const router = express.Router();
@@ -14,31 +14,31 @@ const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 
 // Simule une base en mémoire partagée
-let tasks = [];
+const tasks = [];
 
 // GET --> Récupérer toutes les tâches
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   res.json(tasks);
 });
 
 // GET --> Récupérer une tâche par ID
-router.get("/:id", (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   const id = req.params.id;
-  const task = tasks.find((t) => t.id === id);
+  const task = tasks.find(t => t.id === id);
 
   if (!task) {
-    return next({ status: 404, message: "Task not found" });
+    return next({ status: 404, message: 'Task not found' });
   }
 
   res.json(task);
 });
 
 // POST --> Créer une nouvelle tâche
-router.post("/", (req, res, next) => {
+router.post('/', (req, res, next) => {
   const { title } = req.body;
 
   // Vérifie que title existe ET qu'il reste du texte après trim()
-  if (!title || typeof title !== "string" || title.trim().length === 0) {
+  if (!title || typeof title !== 'string' || title.trim().length === 0) {
     return next({
       status: 400,
       message: "The 'title' field is required and must be a non-empty string.",
@@ -57,13 +57,13 @@ router.post("/", (req, res, next) => {
 });
 
 // PATCH --> Mise à jour partielle (completed) d'une tâche par ID
-router.patch("/:id", (req, res, next) => {
+router.patch('/:id', (req, res, next) => {
   const id = req.params.id;
   const { completed } = req.body;
 
-  const task = tasks.find((t) => t.id === id);
+  const task = tasks.find(t => t.id === id);
   if (!task) {
-    return next({ status: 404, message: "Task not found" });
+    return next({ status: 404, message: 'Task not found' });
   }
 
   if (completed === undefined) {
@@ -71,28 +71,28 @@ router.patch("/:id", (req, res, next) => {
   }
 
   // Vérification que completed est un booléen
-    if (typeof completed !== "boolean") {
-      return next({
-        status: 400,
-        message: "The 'completed' field must be a boolean (true or false)",
-      });
-    }
-    task.completed = completed;
+  if (typeof completed !== 'boolean') {
+    return next({
+      status: 400,
+      message: "The 'completed' field must be a boolean (true or false)",
+    });
+  }
+  task.completed = completed;
 
   res.json(task);
 });
 
 // PUT --> Mise à jour complète d'une tâche par ID
-router.put("/:id", (req, res, next) => {
+router.put('/:id', (req, res, next) => {
   const id = req.params.id;
   const { title, completed } = req.body;
 
-  const task = tasks.find((t) => t.id === id);
+  const task = tasks.find(t => t.id === id);
   if (!task) {
-    return next({ status: 404, message: "Task not found" });
+    return next({ status: 404, message: 'Task not found' });
   }
 
-  if (completed !== undefined && typeof completed !== "boolean") {
+  if (completed !== undefined && typeof completed !== 'boolean') {
     return next({
       status: 400,
       message: "The 'completed' field must be a boolean (true or false)",
@@ -101,7 +101,7 @@ router.put("/:id", (req, res, next) => {
 
   // Si title est fourni, on le valide aussi
   if (title !== undefined) {
-    if (typeof title !== "string" || title.trim().length === 0) {
+    if (typeof title !== 'string' || title.trim().length === 0) {
       return next({
         status: 400,
         message: "The 'title' must be a non-empty string.",
@@ -115,14 +115,13 @@ router.put("/:id", (req, res, next) => {
   res.json(task);
 });
 
-
 // DELETE --> Supprimer une tâche par ID
-router.delete("/:id", (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
-  const index = tasks.findIndex((t) => t.id === id);
+  const index = tasks.findIndex(t => t.id === id);
 
   if (index === -1) {
-    return next({ status: 404, message: "Task not found" });
+    return next({ status: 404, message: 'Task not found' });
   }
 
   tasks.splice(index, 1);

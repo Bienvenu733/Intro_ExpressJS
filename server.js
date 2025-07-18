@@ -5,14 +5,13 @@
 //Importation of necessary modules
 
 //Importation of the Express framework
-const express = require("express");
+const express = require('express');
 /* Importation de dotenv pour la gestion des variables d'environnement
   Pour installer --> npm install dotenv */
-require("dotenv").config();
-
+require('dotenv').config();
 
 // Importationn du routeur défini dans le fichier routes/tasks.js
-const tasksRouter = require("./routes/tasks");
+const tasksRouter = require('./routes/tasks');
 
 //Instanciation d'Express
 const server = express();
@@ -27,17 +26,19 @@ const PORT = process.env.PORT || 3000;
 /*8- Routes implementation*/
 
 // Montre toutes les routes sous /api/tasks
-server.use("/api/tasks", tasksRouter);
+server.use('/api/tasks', tasksRouter);
 
 //Middleware de gestion globale des erreurs
-server.use((err, req, res, next) => {
+server.use((err, res) => {
   console.error(err.stack); // pour debug
 
   const statusCode = err.status || 500;
-  const message = err.message || "Internal Server Error";
+  const message = err.message || 'Internal Server Error';
 
   res.status(statusCode).json({ message });
 });
 
 //6-Server Start
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}... http://localhost:${PORT}`));
+server.listen(PORT, () =>
+  console.log(`Server is running on port ${PORT}... http://localhost:${PORT}`)
+);
