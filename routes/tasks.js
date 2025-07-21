@@ -1,42 +1,46 @@
-/****************
- * tasks.js
- ****************/
+/*****************************
+ * Routes for Task Management *
+ *****************************/
 
-//Importation d'Express
-const express = require("express");
-//Importation d'uuid pour générer des IDs uniques
-/* Pour installer --> npm install uuid */
-const { v4: uuidv4 } = require("uuid");
+//express framework import
+const express = require('express');
 
-//Création du routeur
+// création du mini routeur pour organiser les routes de façon modulaire
 const router = express.Router();
 
+// Importation de la bibliothèque uuid pour générer des identifiants uniques
+/* note : uuidv4 est utilisé pour générer des identifiants uniques pour les tâches
+    pour l'intaller --> npm install uuid */
+const { v4: uuidv4 } = require('uuid');
+
 // Simule une base en mémoire partagée
-let tasks = [];
+const tasks = [];
 
 // GET --> Récupérer toutes les tâches
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   res.json(tasks);
 });
 
-// GET -- Récupérer une tâche par ID
-router.get("/:id", (req, res, next) => {
+// GET --> Récupérer une tâche par ID
+router.get('/:id', (req, res, next) => {
   const id = req.params.id;
-  const task = tasks.find((t) => t.id === id);
+  const task = tasks.find(t => t.id === id);
 
   if (!task) {
-    return next({ status: 404, message: "Task not found" });
+    return next({ status: 404, message: 'Task not found' });
   }
 
   res.json(task);
 });
 
-// POST -- Create une nouvelle tâche
-router.post("/", (req, res, next) => {
+
+// POST --> Créer une nouvelle tâche
+router.post('/', (req, res, next) => {
   const { title } = req.body;
 
   // Vérifie que title existe ET qu'il reste du texte après trim()
-  if (!title || typeof title !== "string" || title.trim().length === 0) {
+  if (!title || typeof title !== 'string' || title.trim().length === 0) {
+
     return next({
       status: 400,
       message: "The 'title' field is required and must be a non-empty string.",
@@ -53,6 +57,7 @@ router.post("/", (req, res, next) => {
   res.status(201).json(newTask);
 });
 
+
 // PATCH --> Mise à jour partielle d'une tâche
 router.patch("/:id", (req, res, next) => {
   const id = req.params.id;
@@ -67,15 +72,14 @@ router.patch("/:id", (req, res, next) => {
     return next({ status: 400, message: "The 'completed' field is required" });
   }
 
-  if (typeof completed !== "boolean") {
+  // Vérification que completed est un booléen
+  if (typeof completed !== 'boolean') {
     return next({
       status: 400,
       message: "The 'completed' field must be a boolean (true or false)",
     });
   }
-
   task.completed = completed;
-
   res.json(task);
 });
 
@@ -94,9 +98,9 @@ router.put("/:id", (req, res, next) => {
     });
   }
 
-    // Si title est fourni, on le valide aussi
+  // Si title est fourni, on le valide aussi
   if (title !== undefined) {
-    if (typeof title !== "string" || title.trim().length === 0) {
+    if (typeof title !== 'string' || title.trim().length === 0) {
       return next({
         status: 400,
         message: "The 'title' must be a non-empty string.",
@@ -110,6 +114,7 @@ router.put("/:id", (req, res, next) => {
   res.json(task);
 });
 
+
 // DELETE --> Suppression d'une tâche
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
@@ -118,7 +123,7 @@ router.delete("/:id", (req, res, next) => {
   if (index === -1) {
     return next({ status: 404, message: "Task not found" });
   }
-
+  
   tasks.splice(index, 1);
   res.status(200).json({ message: "Tâche supprimée avec succès" });
 });
