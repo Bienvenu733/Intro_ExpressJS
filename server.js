@@ -3,7 +3,6 @@
 **********************************/
 
 //Importation of necessary modules
-
 //Importation of the Express framework
 const express = require('express');
 /* Importation de dotenv pour la gestion des variables d'environnement
@@ -29,11 +28,11 @@ const PORT = process.env.PORT || 3000;
 server.use('/api/tasks', tasksRouter);
 
 //Middleware de gestion globale des erreurs
-server.use((err, res) => {
+server.use((err, req, res, next) => {
   console.error(err.stack); // pour debug
 
   const statusCode = err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
 
   res.status(statusCode).json({ message });
 });

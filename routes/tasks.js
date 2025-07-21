@@ -33,12 +33,14 @@ router.get('/:id', (req, res, next) => {
   res.json(task);
 });
 
+
 // POST --> Créer une nouvelle tâche
 router.post('/', (req, res, next) => {
   const { title } = req.body;
 
   // Vérifie que title existe ET qu'il reste du texte après trim()
   if (!title || typeof title !== 'string' || title.trim().length === 0) {
+
     return next({
       status: 400,
       message: "The 'title' field is required and must be a non-empty string.",
@@ -46,7 +48,6 @@ router.post('/', (req, res, next) => {
   }
 
   const newTask = {
-    // Utilisation de uuidv4 pour générer un identifiant unique
     id: uuidv4(),
     title: title.trim(),
     completed: false,
@@ -56,14 +57,15 @@ router.post('/', (req, res, next) => {
   res.status(201).json(newTask);
 });
 
-// PATCH --> Mise à jour partielle (completed) d'une tâche par ID
-router.patch('/:id', (req, res, next) => {
+
+// PATCH --> Mise à jour partielle d'une tâche
+router.patch("/:id", (req, res, next) => {
   const id = req.params.id;
   const { completed } = req.body;
 
-  const task = tasks.find(t => t.id === id);
+  const task = tasks.find((t) => t.id === id);
   if (!task) {
-    return next({ status: 404, message: 'Task not found' });
+    return next({ status: 404, message: "Task not found" });
   }
 
   if (completed === undefined) {
@@ -78,21 +80,18 @@ router.patch('/:id', (req, res, next) => {
     });
   }
   task.completed = completed;
-
   res.json(task);
 });
 
-// PUT --> Mise à jour complète d'une tâche par ID
-router.put('/:id', (req, res, next) => {
+// PUT --> Mise à jour complète d'une tâche
+router.put("/:id", (req, res, next) => {
   const id = req.params.id;
   const { title, completed } = req.body;
 
-  const task = tasks.find(t => t.id === id);
-  if (!task) {
-    return next({ status: 404, message: 'Task not found' });
-  }
+  const task = tasks.find((t) => t.id === id);
+  if (!task) return next({ status: 404, message: "Task not found" });
 
-  if (completed !== undefined && typeof completed !== 'boolean') {
+  if (completed !== undefined && typeof completed !== "boolean") {
     return next({
       status: 400,
       message: "The 'completed' field must be a boolean (true or false)",
@@ -115,17 +114,18 @@ router.put('/:id', (req, res, next) => {
   res.json(task);
 });
 
-// DELETE --> Supprimer une tâche par ID
-router.delete('/:id', (req, res, next) => {
+
+// DELETE --> Suppression d'une tâche
+router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
-  const index = tasks.findIndex(t => t.id === id);
+  const index = tasks.findIndex((t) => t.id === id);
 
   if (index === -1) {
-    return next({ status: 404, message: 'Task not found' });
+    return next({ status: 404, message: "Task not found" });
   }
-
+  
   tasks.splice(index, 1);
-  res.sendStatus(204);
+  res.status(200).json({ message: "Tâche supprimée avec succès" });
 });
 
 module.exports = router;
